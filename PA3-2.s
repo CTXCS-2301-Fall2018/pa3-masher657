@@ -1,18 +1,22 @@
+@Asher Khan; October 10, 2018
+@This code will run a vending machine program that gives you an option of 3 snacks to pick. After you pick a snack it will ask you for the quantity.
+@Once you choose quantity, it will tell you the cost of your snacks.
+
 @Vending machine code
 
     .global main
     .extern printf
 main:
     @@@ Print out "menu" of choices.
-    LDR R0, =msg0
+    LDR R0, =msg0       @prints out message 0
     BL printf
-    LDR R0, =msg1
+    LDR R0, =msg1       @prints out message 1
     BL printf
-    LDR R0, =msg2
+    LDR R0, =msg2       @prints out message 2
     BL printf
-    LDR R0, =msg3
+    LDR R0, =msg3       @prints out message 3
     BL printf
-    LDR R0, =msg4
+    LDR R0, =msg4       @prints message 4
     BL printf
     @@@ Have user enter in their selection
     @@@ Store selection in variable select
@@ -33,27 +37,19 @@ main:
 
     @Your modifications will begin at this point
 
-    CMP R1, #1       @Check for "peanuts"
-    BEQ _peanut      @If user entered 1 goto _peanuts
-    CMP R1, #2       @Check for "chocolate"
-    BEQ _choc        @If user entered 2 goto _choc
-    CMP R1, #3       @Check for "pretzels"
-    BEQ _pretzel     @If user entered 3 goto _pretzel
-    LDR R0, =msg7    @If we get here user entered
+    CMP R1, #2      @Compares R1 with 2
+
+    MOVLT R3, #75     @if R1 is < 2, then R3 will hold 75
+    MOVEQ R3, #125    @if R1 is = 2, then R3 will hold 125
+    MOVGT R3, #90     @if R1 is > 2, then R3 will hold 90
+    CMP R1, #3          @if R1 is > 3, then the illegal selection will run
+    LDRGT R0, =msg7    @If we get here user entered
                      @an illegal selection so print
                      @error message and terminate
-    BL printf
-    MOV R7, #1
-    SWI #0           @Terminate, error condition
-_peanut:
-    MOV R3, #75      @Move 75 cents into R3
-    BAL _compute
-_choc:
-    MOV R3, #125     @Move 125 cents into R3
-    BAL _compute
-_pretzel:
-    MOV R3, #90      @Move 90 cents into R3
-_compute:
+    BLGT printf
+    MOVGT R7, #1
+    SWIGT #0           @Terminate, error condition
+
     LDR R4, =quantity @Get address of var quantity
     LDR R4, [R4]      @Value of quantity now in R4
     MUL R1, R3, R4    @Multiply number of cents times quantity
@@ -62,6 +58,7 @@ _compute:
     BL printf
     MOV R7, #1        @Normal exit
     SWI #0
+
 
 .data
 select: .word 0
